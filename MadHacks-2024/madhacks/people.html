@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MadHacks 2024</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        #side-menu {
+            height: 100vh;
+            width: 200px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #D9D2B6;
+            padding-top: 20px;
+        }
+
+        #side-menu a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #71697A;
+            font-size: 18px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        #side-menu a:hover {
+            background-color: #F2F6D0;
+        }
+
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #task-list {
+            margin-top: 20px;
+        }
+
+        .task-item {
+            background-color: #f4f4f4;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        /* Search bar styling */
+        #search-bar {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-result {
+            margin-bottom: 10px;
+        }
+
+        .follow-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .follow-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="side-menu">
+        <a href="javascript:void(0);" onclick="showFriendsTasks()">Friends</a>
+        <a href="javascript:void(0);" onclick="showFollowingTasks()">Following</a>
+    </div>
+
+    <div class="content">
+        <h1>Other People's Businesses</h1>
+        <a href="frontend.html">Go Back</a>
+
+        <!-- Search bar to search for users -->
+        <input type="text" id="search-bar" placeholder="Search for users..." oninput="searchUsers()">
+
+        <!-- Task list will be shown here -->
+        <div id="task-list"></div>
+    </div>
+
+    <script>
+        function getAppState() {
+            return JSON.parse(localStorage.getItem("unnamed-app-data")) || { users: {}, currentUser: {} };
+        }
+
+       // Function to follow a user
+    function followUser(username) {
+        const appState = getAppState();
+        const currentUser = appState.currentUser.username;
+
+        // Prevent user from following themselves
+        if (currentUser === username) {
+            alert("You cannot follow yourself.");
+            return;
+        }
+
+        if (currentUser && appState.users[currentUser]) {
+            const user = appState.users[currentUser];
+        
+            // If the user is already following the person
+            if (user.following.includes(username)) {
+                alert(`You are already following ${username}.`);
+                return;
+            }
+            const otherUser = appState.users[username];
+            // Check if the two users are already friends
+        if (user.friends.includes(username)) {
+            alert(`You are already friends with ${username}.`);
+            return;
+        }
+
+                // Check if the other user is also following the current user
+                if (otherUser && otherUser.following.includes(currentUser)) {
+                    // Both users are following each other, so they become friends
+                    
+                    // Remove from following lists of both users
+                    user.following = user.following.filter(following => following !== username);
+                    otherUser.following = otherUser.following.filter(following => following !== currentUser);
+
+                    // Add to the friends lists of both users if not already friends
+                if (!user.friends.includes(username)) {
+                    user.friends.push(username);
+                }
+                if (!otherUser.friends.includes(currentUser)) {
+                    otherUser.friends.push(currentUser);
+                }
+
+                // Save the updated app state
+                saveAppState(appState);
+
+                // Notify both users
+                alert(`You are now friends with ${username}!`);
+            } 
+         else {
+            // If the user is not following the person, follow them
+            user.following.push(username);
+
+            // Save the updated app state
+            saveAppState(appState);
+
+            // Notify the user
+            alert(`You are now following ${username}`);
+            }
+        }
+    }
+       // Function to save app state to localStorage
+        function saveAppState(state) {
+            localStorage.setItem("unnamed-app-data", JSON.stringify(state));
+        }
+
+        // Function to search for users based on the input
+        function searchUsers() {
+            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+            const appState = getAppState();
+            const users = appState.users;
+            let searchResultsHtml = `<h2>Search Results</h2>`;
+
+            // Filter users based on search query
+            const searchResults = Object.keys(users).filter(username => {
+                return username.toLowerCase().includes(searchQuery);
+            });
+
+            if (searchResults.length > 0) {
+                searchResults.forEach(username => {
+                    const user = users[username];
+                    searchResultsHtml += `
+                        <div class="search-result">
+                            <h3>${username}</h3>
+                            <button class="follow-btn" onclick="followUser('${username}')">Follow</button>
+                        </div>
+                    `;
+                });
+            } else {
+                searchResultsHtml += `<p>No users found.</p>`;
+            }
+
+            document.getElementById('task-list').innerHTML = searchResultsHtml;
+        }
+
+        // Function to show tasks of friends (including completed tasks)
+        function showFriendsTasks() {
+    const appState = getAppState();
+    const currentUser = appState.currentUser.username;
+    let taskListHtml = `<h2>Friends' Tasks</h2>`;
+    
+    if (currentUser && appState.users[currentUser]) {
+        const friends = appState.users[currentUser].friends;
+        
+        if (friends && friends.length > 0) {
+            friends.forEach(friendUsername => {
+                const friend = appState.users[friendUsername];
+                if (friend) {
+                    // Check if friend has active tasks
+                    if (friend.tasks && friend.tasks.length > 0) {
+                        taskListHtml += `<h3>${friendUsername}'s Tasks:</h3>`;
+                        taskListHtml += `<h4>Active Tasks:</h4><ul>`;
+                        
+                        friend.tasks.forEach(task => {
+                            taskListHtml += `<li class="task-item">${task.description || task}</li>`;
+                        });
+                        
+                        taskListHtml += `</ul>`;
+                    } else {
+                        taskListHtml += `<p>${friendUsername} has no active tasks.</p>`;
+                    }
+
+                    // Display completed tasks even if there are no active tasks
+                    if (friend.completedTasks && friend.completedTasks.length > 0) {
+                        taskListHtml += `<h4>Completed Tasks:</h4><ul>`;
+                        friend.completedTasks.forEach(task => {
+                            taskListHtml += `<li class="task-item completed-task">${task.description || task}`;
+                            
+                            // Check if the task's category is "helping others" and add an "Approve" button if true
+                            if (task.category === "Helping Task" && !task.approvedBy?.includes(currentUser)) {
+                                taskListHtml += `
+                                    <button class="approve-btn" onclick="approveHelpingOthersTask('${friendUsername}', '${task.description}')">Approve</button>
+                                `;
+                            }
+
+                            taskListHtml += `</li>`;
+                        });
+                        taskListHtml += `</ul>`;
+                    } else {
+                        taskListHtml += `<p>${friendUsername} has no completed tasks.</p>`;
+                    }
+                } else {
+                    taskListHtml += `<p>${friendUsername} has no tasks.</p>`;
+                }
+            });
+        } else {
+            taskListHtml += `<p>You have no friends.</p>`;
+        }
+
+        // Update the DOM with the final HTML
+        document.getElementById('task-list').innerHTML = taskListHtml;
+    }
+}
+
+
+// Function to handle approval of a "helping others" task
+function approveHelpingOthersTask(friendUsername, taskDescription) {
+    const appState = getAppState();
+    const friend = appState.users[friendUsername];
+
+    if (friend) {
+        const task = friend.completedTasks.find(t => t.description === taskDescription);
+
+        if (task) {
+            // Ensure task has an "approvedBy" array to track who approved it
+            task.approvedBy = task.approvedBy || [];
+            if (!task.approvedBy.includes(appState.currentUser.username)) {
+                task.approvedBy.push(appState.currentUser.username);
+
+                // Reward user for receiving an approval
+                friend.coins = (parseInt(friend.coins) || 0) + 5;
+    
+
+                // Save the updated app state
+                saveAppState(appState);
+
+                alert(`You approved ${friendUsername}'s task: "${taskDescription}"`);
+
+                // Refresh the task list to reflect the approval
+                showFriendsTasks();
+            } else {
+                alert("You have already approved this task.");
+            }
+        }
+    }
+}
+
+
+// Function to show tasks of following (including completed tasks)
+function showFollowingTasks() {
+    const appState = getAppState();
+    const currentUser = appState.currentUser.username;
+    let taskListHtml = `<h2>Following' Tasks</h2>`;
+    
+    if (currentUser && appState.users[currentUser]) {
+        const following = appState.users[currentUser].following;
+        
+        if (following && following.length > 0) {
+            following.forEach(followingUsername => {
+                const followingUser = appState.users[followingUsername];
+                if (followingUser && followingUser.tasks && followingUser.tasks.length > 0) {
+                    taskListHtml += `<h3>${followingUsername}'s Tasks:</h3>`;
+                    taskListHtml += `<h4>Active Tasks:</h4><ul>`;
+                    followingUser.tasks.forEach(task => {
+                        taskListHtml += `<li class="task-item">${task.description || task}</li>`;
+                    });
+                    taskListHtml += `</ul>`;
+
+                    // Display completed tasks if available
+                    if (followingUser.completedTasks && followingUser.completedTasks.length > 0) {
+                        taskListHtml += `<h4>Completed Tasks:</h4><ul>`;
+                        followingUser.completedTasks.forEach(task => {
+                            taskListHtml += `<li class="task-item completed-task">${task.description || task}</li>`;
+                        });
+                        taskListHtml += `</ul>`;
+                    } else {
+                        taskListHtml += `<p>${followingUsername} has no completed tasks.</p>`;
+                    }
+                } else {
+                    taskListHtml += `<p>${followingUsername} has no tasks.</p>`;
+                }
+            });
+        } else {
+            taskListHtml += `<p>You are not following anyone.</p>`;
+        }
+
+        document.getElementById('task-list').innerHTML = taskListHtml;
+    }
+}
+
+    </script>
+</body>
+</html>

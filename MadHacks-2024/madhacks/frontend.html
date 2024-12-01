@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="app.js"></script>
+    
+    <title>MadHacks 2024</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+    <!--<div id="vertical-rectangle"></div>-->
+    <h1 id="greeting"></h1>
+    <div id="sidebar">
+        <h1 class="out-sidebar" id="greeting"></h1>
+        <!-- <img src="feed1.jpg" alt="Profile Picture" id="profile-pic"> -->
+    </div>
+
+    <div id="profile-picture">
+        <img src="feed1.jpg" alt="Profile Picture">
+    </div>  
+
+
+
+    <div id="buttons-container">
+        <button id="add-task" onclick="window.location.href='addTask.html'">Add Task</button>
+        <button id="add-people" onclick="window.location.href='people.html'">Add People</button>
+        <button id="sign-out" onclick="window.location.href='login.html'">Sign Out</button>
+    </div> 
+ 
+   <div id="task-info">
+        <!-- <p id="username">Name</p>
+        <p id="badges">Badges</p> -->
+    </div>
+
+     <!-- Task List -->
+<div class="column-main">
+
+
+    <!-- Dynamic Task List will be rendered here -->
+    <ul id="task-list">
+        <!-- Tasks will be added dynamically using JavaScript -->
+    </ul>
+
+    
+    <ul id="completed-task-list">
+        <!-- Completed Tasks will be added dynamically using JavaScript -->
+    </ul>
+
+             <!-- Display user coins -->
+             <div id="user-coins">
+                <h3>Your Coins: <span id="coins">0</span></h3>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Function to fetch app state from localStorage
+    function getAppState() {
+        const appState = JSON.parse(localStorage.getItem("unnamed-app-data")) || { users: {}, currentUser: {} };
+
+    return appState;
+        
+        
+  
+    }       
+    
+
+    // Function to save app state to localStorage
+    function saveAppState(state) {
+        localStorage.setItem("unnamed-app-data", JSON.stringify(state));
+    }
+
+
+
+  // Function to display a greeting with the current user's username
+        
+  function displayGreeting() {
+        // alert("displaygretoing")
+        const appState = getAppState();
+        const greetingElement = document.getElementById("greeting");
+        
+        // Check if current user is available in appState
+        if (appState.currentUser && appState.currentUser.username) {
+            greetingElement.textContent = `Hello ${appState.currentUser.username}`;
+        } else {
+            greetingElement.textContent = "Hello, Guest";  // Fallback in case username is unavailable
+        }
+    }
+
+// Call displayGreeting function on page load
+displayGreeting();
+
+    // Function to display the user's tasks and coins
+    function displayUserTasks() {
+        const appState = getAppState();
+        const currentUser = appState.currentUser.username;
+        const taskListHtml = document.getElementById('task-list');
+        const completedTaskListHtml = document.getElementById('completed-task-list');
+        const coinsHtml = document.getElementById('coins');
+
+        if (currentUser && appState.users[currentUser]) {
+            const user = appState.users[currentUser];
+            const userTasks = user.tasks;
+            const completedTasks = user.completedTasks || [];
+            const coins = user.coins || 0;
+
+            // Clear the existing task lists
+            taskListHtml.innerHTML = '';
+            completedTaskListHtml.innerHTML = '';
+
+            // Display the coins
+            coinsHtml.textContent = coins;
+
+            // Iterate over the active tasks and add them to the active list
+            userTasks.forEach(task => {
+                const taskItem = document.createElement('li');
+                taskItem.classList.add('task');
+                taskItem.innerHTML = `
+                    <span class="task-title">${task.title} - ${task.description}</span>
+                    <button class="complete-btn" onclick="completeTask('${task.title}')">Complete</button>
+                `;
+                taskListHtml.appendChild(taskItem);
+            });
+
+            // Iterate over the completed tasks and add them to the completed list
+            completedTasks.forEach(task => {
+                const taskItem = document.createElement('li');
+                taskItem.classList.add('task');
+                taskItem.style.textDecoration = "line-through";  // Style completed tasks with strikethrough
+                taskItem.innerHTML = `
+                    <span class="task-title">${task.title} - ${task.description}</span>
+                `;
+                completedTaskListHtml.appendChild(taskItem);
+            });
+        } else {
+            taskListHtml.innerHTML = '<p>No tasks available for this user.</p>';
+        }
+    }
+
+    // Function to mark a task as completed and add 10 coins to the user
+    function completeTask(taskTitle) {
+        const appState = getAppState();
+        const currentUser = appState.currentUser.username;
+
+        if (currentUser && appState.users[currentUser]) {
+            const user = appState.users[currentUser];
+            const userTasks = user.tasks;
+            const completedTasks = user.completedTasks || [];
+
+            // Find the task to mark as completed
+            const taskIndex = userTasks.findIndex(task => task.title === taskTitle);
+            if (taskIndex !== -1) {
+                // Move the task to completedTasks
+                const completedTask = userTasks.splice(taskIndex, 1)[0];
+                completedTasks.push(completedTask);
+
+                // Add coins to the user
+                let coins = parseInt(user.coins) || 0; // Ensure coins are treated as a number
+                let coinVal = 10;
+
+                if (completedTask.category === 'Long-Term Goal') {
+                    coinVal = 20;
+                }
+
+                user.coins = coins + coinVal;
+
+                // Add 10 coins to the user
+                //const coins = parseInt(user.coins) || 0;
+                //user.coins = parseInt(coins) + completedTask[2];
+
+                // Update the appState with the new task lists and coins
+                appState.users[currentUser].tasks = userTasks;
+                appState.users[currentUser].completedTasks = completedTasks;
+                appState.users[currentUser].coins = user.coins;
+                saveAppState(appState);
+
+                // Update the display
+                displayUserTasks();
+            }
+        }
+    }
+
+    // Load tasks and coins when the page is loaded
+    window.onload = displayUserTasks;
+</script>
+
+
+
+        
+<!-- DELETE LATER and move to the second page -->
+        <!-- <div class="column-main">
+            <h2>Tasks</h2>
+    
+            <input id="new-task-title" class="form-control" style="max-width: 10em;"/>
+            <p id="title-error-text" style="color: red;"></p>
+    
+            <input id="new-task-description" class="form-control" style="max-width: 10em;"/>
+            <p id="description-error-text" style="color: red;"></p>
+    
+            <select id="new-task-category" class="form-select me-2" style="max-width: 12em;" aria-label="Task Category">
+                <option>Daily Task</option>
+                <option>Long-Term Goal</option>
+                <option>Helping Task</option>
+            </select>
+            <p id="category-error-text" style="color: red;"></p>
+    
+            <button id="add-btn" class="btn btn-secondary me-2" style="width: fit-content;" onclick="addTask()">Add Task</button>
+    
+        </div> -->
+
+<!-- <p id="tasks-public"></p> -->
+
+<div class="grid-container">
+    <div class="grid-item">
+        <div class="image-container">
+            <img src="feed1.jpg" alt="Image 1">
+        </div>
+        <div class="description">
+            <p1>Name</p1>
+            <p>Description of the first item goes here.</p>
+        </div>
+        <div class="icon-container">
+            <i class="fa fa-heart" aria-hidden="true"></i>
+            <i class="fa fa-comment" aria-hidden="true"></i>
+            <i class="fa fa-share" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <div class="grid-item">
+        <div class="image-container">
+            <img src="feed2.jpg" alt="Image 2">
+        </div>
+        <div class="description">
+            <p1>Name</p1>
+            <p>Description of the second item goes here.</p>
+        </div>
+        <div class="icon-container">
+            <i class="fa fa-heart" aria-hidden="true"></i>
+            <i class="fa fa-comment" aria-hidden="true"></i>
+            <i class="fa fa-share" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <!-- Add more grid items to create multiple rows -->
+    <div class="grid-item">
+        <div class="image-container">
+            <img src="feed3.jpg" alt="Image 3">
+        </div>
+        <div class="description">
+            <p1>Name</p1>
+            <p>Description of the third item goes here.</p>
+        </div>
+        <div class="icon-container">
+            <i class="fa fa-heart" aria-hidden="true"></i>
+            <i class="fa fa-comment" aria-hidden="true"></i>
+            <i class="fa fa-share" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <div class="grid-item">
+        <div class="image-container">
+            <img src="feed4.jpg" alt="Image 4">
+        </div>
+        <div class="description">
+            <p1>Name</p1>
+            <p>Description of the fourth item goes here.</p>
+        </div>
+        <div class="icon-container">
+            <i class="fa fa-heart" aria-hidden="true"></i>
+            <i class="fa fa-comment" aria-hidden="true"></i>
+            <i class="fa fa-share" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <!-- Continue adding more grid items for additional rows -->
+</div>
+
+    <!-- <div class = "task-chart">  
+        <table>
+            <tr>
+                <td id="task-title">Task Title</td>
+            </tr>
+            <tr>
+                <td id="task-description">Task Description</td>
+            </tr>
+        </table>
+    </div> -->
+</body>
+</html>

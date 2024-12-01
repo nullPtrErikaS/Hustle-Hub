@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        /* Simple styling for layout */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container h2 {
+            margin-bottom: 20px;
+        }
+        .container input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .container button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .signup-btn {
+            background-color: #008CBA;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Welcome! Please Log In</h2>
+    
+    <!-- Input fields for username and password -->
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    
+    <!-- Buttons for Login and Create Account -->
+    <button class="login-btn" onclick="login()">Login</button>
+    <button class="signup-btn" onclick="createAccount()">Create Account</button>
+</div>
+
+<script>
+    // JavaScript functions for handling button clicks
+    function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        alert(`Logging in with Username: ${username}, Password: ${password}`);
+        // Add logic to send login data to the backend
+    } 
+
+    function createAccount() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        alert(`Creating account with Username: ${username}, Password: ${password}`);
+        // Add logic to send create account data to the backend
+    }
+</script>
+
+</body>
+</html>

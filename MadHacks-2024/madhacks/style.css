@@ -1,0 +1,231 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+.out-sidebar{
+    left:10px;
+    position:absolute;
+}
+#sidebar {
+    width: 20%; /* 1/5th of the full width */
+    height: 100vh; /* 100% of the viewport height */
+    position: fixed; /* Fixed position to stay in place on scroll */
+    left: 0;
+    top: 0;
+    background-color: #D9D2B6; /*Dark background for the sidebar*/
+    z-index: -1;
+}
+
+#profile-picture {
+    position: fixed; /* Locks the profile picture in place */
+    top: 50px;       /* Distance from the top of the viewport */
+    left: 20px;      /* Distance from the left side of the viewport */
+    width: 100px;    /* Set the size of the profile picture */
+    height: 100px;
+    border-radius: 50%; /* Makes it circular */
+    overflow: hidden;   /* Ensures rounded edges if image exceeds container */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
+}
+
+#profile-picture img {
+    width: 100%;  /* Makes the image fill the container */
+    height: 100%; 
+    object-fit: cover; /*Ensures the image covers the container without distortion */
+}
+
+#user-coins {
+    position: absolute;
+    top: -290px;      /* Distance from the top */
+    left: 1150px;    /* Distance from the right */
+    background-color: white; /* Optional: Add a background for better readability */
+    padding: 5px;  /* Optional: Add some padding */
+    border-radius: 5px; /* Optional: Rounded corners */
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Optional: Shadow for better visibility */
+}
+
+#task-info {
+    position: absolute; /* or 'relative' if you prefer */
+    top: 150px;         /* Adjust as needed to move it down */
+    left: 20px;         /* Adjust as needed to move it to the right */
+    text-align: left;   /* Ensures the text inside aligns to the left */
+    padding: 10px;      /* Optional: Adds padding around the text */
+    
+}
+
+#main-content {
+    margin-left: 20%; /* Same as the sidebar width to prevent overlay */
+    padding: 20px; /* Padding around the content */
+    height: 100%; /* Optional: Might be adjusted based on actual content */
+}
+
+#mcolumn-main {
+    margin-left: 20%; /* Same as the sidebar width to prevent overlay */
+    padding: 20px; /* Padding around the content */
+    height: 100%; /* Optional: Might be adjusted based on actual content */
+}
+
+#flex-container{
+    font-family: "Lato";
+    position: absolute;
+    top: 10px;      /* Distance from the top */
+    right: 10px;
+}
+
+h1{
+    font-family: "Lato";
+    position: absolute;
+    left: 200px;
+}
+
+h2{
+    font-family: "Lato";
+    position: absolute;
+    top: 300px;      /* Distance from the top */
+    left: 300px;
+}
+
+h3{
+    font-family: "Lato"; 
+    font-family: "Lato";
+    position: absolute;
+    top: 300px;      /* Distance from the top */
+    left: 20px;
+}
+
+table, th, td {
+    border: 1px solid #71697A;
+}
+
+.input-field{
+    background-color: #F2F6D0;
+}
+
+#buttons-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 760px;
+    left: 50px;
+    display: flex;          /* Align buttons horizontally */
+    gap: 10px;               /* Space between buttons */
+}
+
+#content {
+    position: absolute;
+    text-align: left;
+    top: 20px;
+    left: 100px;
+}
+
+/* Grid container */
+/* Grid container */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Flexible columns */
+    gap: 50px; /* Space between grid items */
+    padding: 20px;
+    max-width: 1200px; /* Optional: Sets a max width for the grid */
+    margin: 30px auto 0; /* Adds 50px of space from the top */
+    margin-left: 300px;
+}
+
+
+/* Individual grid items */
+.grid-item {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Ensures rounded corners for content */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Image container */
+.image-container {
+    width: 100%;
+    height: 150px; /* Fixed height for images */
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the container without distortion */
+}
+
+/* Description styling */
+.description {
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+* Icon container styling */
+.icon-container {
+    display: flex;
+    justify-content: space-around; /* Spreads icons evenly */
+    padding-top: 10px;
+    border-top: 1px solid #ddd; /* Optional: adds a separator line */
+    color: #555; /* Icon color */
+}
+
+.icon-container i {
+    font-size: 18px; /* Icon size */
+    cursor: pointer; /* Pointer cursor for clickable icons */
+}
+
+.icon-container i:hover {
+    color: #ff4d4d; /* Optional: Changes color on hover */
+}
+
+#add-task, #add-people, #sign-out {
+    background-color: #D0E1D4; /* Button color */
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#add-task:hover, #add-people:hover, #sign-out:hover {
+    background-color: #748979; /* Darken color on hover */
+}
+
+#task-adder{
+    font-family: "Lato";
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 30%;
+    padding: 10px;
+    border:2px solid #71697A;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #D9D2B6;
+}
+
+#vertical-rectangle{
+    position: fixed;
+    width: 20%;
+    height: 100vh;
+    background-color: #FF0000;
+    left: 0;
+    top: 0;
+}
+
+.out-sidebar{
+    
+    padding: 20px;
+    position: absolute; /* Position the grid absolutely */
+     top: 20px;      /*   Move the grid 50px from the top */
+    left: 300px;
+}
+
+#tasks-public{
+   
+}
